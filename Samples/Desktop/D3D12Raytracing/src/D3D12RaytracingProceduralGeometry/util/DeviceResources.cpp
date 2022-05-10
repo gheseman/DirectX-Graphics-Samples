@@ -623,7 +623,7 @@ void DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter)
         if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
         {
             // Don't select the Basic Render Driver adapter.
-            continue;
+            //continue;
         }
 
         // Check to see if the adapter supports Direct3D 12, but don't create the actual device yet.
