@@ -15,8 +15,10 @@
 #include "RaytracingHlslCompat.h"
 
 RaytracingAccelerationStructure Scene : register(t0, space0);
-RWTexture2D<float4> RenderTarget : register(u0);
+RWTexture2D<float4> RenderTarget       : register(u0);
+RWTexture2D<float4> accumulationBuffer : register(u1);
 ConstantBuffer<RayGenConstantBuffer> g_rayGenCB : register(b0);
+
 
 typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 struct RayPayload
@@ -55,6 +57,9 @@ void MyRaygenShader()
         ray.TMax = 10000.0;
         RayPayload payload = { float4(0, 0, 0, 0) };
         TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
+
+        // Write a value to the faux accumulation buffer.
+        accumulationBuffer[DispatchRaysIndex().xy] = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Write the raytraced color to the output texture.
         RenderTarget[DispatchRaysIndex().xy] = payload.color;

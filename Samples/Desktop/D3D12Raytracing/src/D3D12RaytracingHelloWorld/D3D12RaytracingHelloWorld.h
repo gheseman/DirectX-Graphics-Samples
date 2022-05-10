@@ -18,6 +18,7 @@
 namespace GlobalRootSignatureParams {
     enum Value { 
         OutputViewSlot = 0,
+        //AccumViewSlot,
         AccelerationStructureSlot,
         Count 
     };
@@ -83,6 +84,11 @@ private:
     ComPtr<ID3D12Resource> m_raytracingOutput;
     D3D12_GPU_DESCRIPTOR_HANDLE m_raytracingOutputResourceUAVGpuDescriptor;
     UINT m_raytracingOutputResourceUAVDescriptorHeapIndex;
+    
+    // Faux Accumulator
+    ComPtr<ID3D12Resource> m_raytracingAcc;
+    D3D12_GPU_DESCRIPTOR_HANDLE m_raytracingAccResourceUAVGpuDescriptor;
+    UINT m_raytracingAccResourceUAVDescriptorHeapIndex;
 
     // Shader tables
     static const wchar_t* c_hitGroupName;
