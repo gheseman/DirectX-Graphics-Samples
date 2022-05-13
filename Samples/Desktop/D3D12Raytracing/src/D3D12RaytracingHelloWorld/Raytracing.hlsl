@@ -44,7 +44,10 @@ void MyRaygenShader()
         lerp(g_rayGenCB.viewport.top, g_rayGenCB.viewport.bottom, lerpValues.y),
         0.0f);
 
-    if (IsInsideViewport(origin.xy, g_rayGenCB.stencil))
+    // Write a value to the faux accumulation buffer.  This is fine for all configs.
+    //accumulationBuffer[DispatchRaysIndex().xy] = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    //if (IsInsideViewport(origin.xy, g_rayGenCB.stencil))
     {
         // Trace the ray.
         // Set the ray's extents.
@@ -58,17 +61,35 @@ void MyRaygenShader()
         RayPayload payload = { float4(0, 0, 0, 0) };
         TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, ~0, 0, 1, 0, ray, payload);
 
-        // Write a value to the faux accumulation buffer.
-        accumulationBuffer[DispatchRaysIndex().xy] = float4(1.0f, 1.0f, 1.0f, 1.0f);
+        // Write a value to the faux accumulation buffer. This will break the TGM based UAV writes
+        //accumulationBuffer[DispatchRaysIndex().xy] = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Write the raytraced color to the output texture.
-        RenderTarget[DispatchRaysIndex().xy] = payload.color;
+        //RenderTarget[DispatchRaysIndex().xy] = float4(0.0f, lerpValues.x, lerpValues.y, 1.0f); // payload.color;
+
+        // Write a value to the faux accumulation buffer. This will break the TGM based UAV writes
+        //accumulationBuffer[DispatchRaysIndex().xy] = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
     }
+#if 0
     else
     {
+        // Write a value to the faux accumulation buffer.  This is fine for all configs.
+        //accumulationBuffer[DispatchRaysIndex().xy] = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
         // Render interpolated DispatchRaysIndex outside the stencil window
         RenderTarget[DispatchRaysIndex().xy] = float4(lerpValues, 0, 1);
     }
+#endif
+    // Write the raytraced color to the output texture.
+    //RenderTarget[DispatchRaysIndex().xy] = float4(0.0f, lerpValues.x, lerpValues.y, 1.0f); // payload.color;
+
+    // Write a value to the faux accumulation buffer. This will break the TGM based UAV writes
+    accumulationBuffer[DispatchRaysIndex().xy] = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Write the raytraced color to the output texture.
+    RenderTarget[DispatchRaysIndex().xy] = float4(0.0f, lerpValues.x, lerpValues.y, 1.0f); // payload.color;
+
 }
 
 [shader("closesthit")]
